@@ -1,0 +1,184 @@
+﻿@page "/market"
+
+<PageTitle>Market Data</PageTitle>
+
+@using intelometry_app.Filters
+@using intelometry_app.Interfaces
+@using intelometry_app.Models
+@using intelometry_app.Wrappers
+@inject IMarketDataService MarketService
+@inject NavigationManager NavigationManager
+
+@if (marketData == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="d-flex flex-xl-row flex-md-column-reverse align-items-center">
+        <div class="me-2">
+            <PriceHubDropdown CurrentPriceHub="@priceHub" OnSelectPriceHub="UpdatePriceHub" />
+        </div>
+        <div class="ms-2">
+            <DateFilter EndDate="@endDate"
+                    StartDate="@startDate"
+                    CurrentState="@isFilterApplied"
+                    CurrentDateFilter="@dateFilterType"
+                    OnSelectDateRange="UpdateDateFilter">
+            </DateFilter>
+        </div>
+        <div class="ms-auto">
+            <button type="button" class="btn btn-secondary oi oi-reload" @onclick="Reset"></button>
+        </div>
+    </div>
+
+    <div class="table-container border rounded-3">
+        @if (marketData.Data.Count > 0)
+        {
+            <MarketDataTable Response="marketData"></MarketDataTable>
+
+            <Paginator Range="2"
+               CurrentPageSize="pageSize"
+               CurrentPage="page"
+               TotalPages="totalPages"
+               TotalRecords="marketData.TotalRecords"
+               OnSelectPage="UpdatePage"
+               OnSelectPageSize="UpdatePageSize">
+            </Paginator>
+        }
+        else
+        {
+            <div class="py-4 text-center">
+                <p><em>@marketData.Message</em></p>
+                <button type="button" class="btn btn-outline-primary oi oi-reload" @onclick="Reset"></button>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private int page;
+    private int pageSize;
+    private int totalPages;
+    private string? priceHub;
+    private string? dateFilterType;
+    private bool isFilterApplied;
+    private DateOnly startDate;
+    private DateOnly endDate;
+    private PagedResponse<List<MarketDataModel>>? marketData;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "priceHub")]
+    public string? PriceHub { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "page")]
+    public int? Page { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "pageSize")]
+    public int? PageSize { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "startDate")]
+    public DateOnly? StartDate { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "endDate")]
+    public DateOnly? EndDate { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "filterType")]
+    public string? DateFilterType { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "dateApplied")]
+    public bool? IsDateApplied { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Paginator filters
+        page = Page ?? 1;
+        pageSize = PageSize ?? 10;
+
+        var paginationFilter = new PaginationFilter(page, pageSize);
+
+        // Price hub filter
+        priceHub = PriceHub ?? null;
+
+        // Trade/Delivery dates range filters
+        isFilterApplied = IsDateApplied ?? false;
+        dateFilterType = DateFilterType ?? null;
+        startDate = StartDate ?? DateOnly.FromDateTime(DateTime.Today);
+        endDate = EndDate ?? DateOnly.FromDateTime(DateTime.Today);
+
+        var dateFilter = new DateRangeFilter(startDate.ToString("yyyy-MM-dd"),
+            endDate.ToString("yyyy-MM-dd"), dateFilterType, isFilterApplied);
+
+
+        // Main data & additional data
+        marketData = await MarketService.GetMarketDataAsync(paginationFilter, dateFilter, priceHub);
+        totalPages = (int)Math.Ceiling(marketData.TotalRecords / (double)pageSize);
+    }
+
+    private void UpdatePage(int pageNumber)
+    {
+        Page = pageNumber;
+        NavigateTo();
+    }
+
+    private void UpdatePageSize(int pageSizeNumber)
+    {
+        PageSize = pageSizeNumber;
+        UpdatePage(1);
+    }
+
+    private void UpdatePriceHub(string priceHubTitle)
+    {
+        PriceHub = priceHubTitle;
+        UpdatePage(1);
+    }
+
+    private void UpdateDateFilter((DateOnly, DateOnly, string, bool) args)
+    {
+        StartDate = args.Item1;
+        EndDate = args.Item2;
+        DateFilterType = args.Item3;
+        IsDateApplied = args.Item4;
+
+        if (IsDateApplied == false)
+            IsDateApplied = null;
+
+        UpdatePage(1);
+    }
+
+    private void Reset()
+    {
+        Page = null;
+        PageSize = null;
+        PriceHub = null;
+        StartDate = null;
+        EndDate = null;
+        DateFilterType = null;
+        IsDateApplied = null;
+        NavigateTo();
+    }
+
+    private void NavigateTo()
+    {
+        var address = NavigationManager.GetUriWithQueryParameters(
+            new Dictionary<string, object?>
+                {
+                    ["page"] = Page,
+                    ["pageSize"] = PageSize,
+                    ["priceHub"] = PriceHub,
+                    ["dateApplied"] = IsDateApplied,
+                    ["filterType"] = DateFilterType,
+                    ["startDate"] = StartDate,
+                    ["endDate"] = EndDate,
+                }
+        );
+
+        NavigationManager.NavigateTo(address);
+    }
+}

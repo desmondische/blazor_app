@@ -1,0 +1,42 @@
+﻿@using intelometry_app.Interfaces
+@using intelometry_app.Models
+@inject IPriceHubService PriceHubService
+
+<div class="btn-group">
+    <button class="btn dropdown-toggle @(CurrentPriceHub != null ? "btn-primary" : "btn-outline-primary")" type="button"
+            id="defaultDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+        @(CurrentPriceHub ?? "Select Price Hub")
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="defaultDropdown">
+        <li><a class="dropdown-item" @onclick=@(e => SelectedPriceHubInternal(null))>-</a></li>
+        @if (PriceHubs != null)
+        {
+            @foreach (var priceHub in PriceHubs!)
+            {
+                <li><a class="dropdown-item" @onclick=@(e => SelectedPriceHubInternal(priceHub.Title))>@priceHub.Title</a></li>
+            }
+        }
+    </ul>
+</div>
+
+@code {
+    [Parameter]
+    public List<PriceHubModel>? PriceHubs { get; set; }
+
+    [Parameter]
+    public string? CurrentPriceHub { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSelectPriceHub { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        PriceHubs = await PriceHubService.GetPriceHubDataAsync();
+    }
+
+    private async Task SelectedPriceHubInternal(string? selectedPriceHub)
+    {
+        CurrentPriceHub = selectedPriceHub;
+        await OnSelectPriceHub.InvokeAsync(selectedPriceHub);
+    }
+}
