@@ -1,17 +1,16 @@
-﻿@using intelometry_app.Models
-@using intelometry_app.Wrappers
+﻿@inherits MarketDataTableBase
 
-<table class="table text-center mb-0">
-    <thead>
+<table class="table text-center mb-0 overflow-auto">
+    <thead class="table-dark">
         <tr>
-            @foreach (var column in Response!.Columns)
+            @foreach (var column in Columns)
             {
                 <th>@column</th>
             }
         </tr>
     </thead>
     <tbody>
-        @foreach (var data in Response!.Data)
+        @foreach (var data in MarketData)
         {
             <tr>
                 <td>@data.Id</td>
@@ -29,8 +28,3 @@
     </tbody>
 </table>
 
-
-@code {
-    [Parameter]
-    public PagedResponse<List<MarketDataModel>>? Response { get; set; }
-}

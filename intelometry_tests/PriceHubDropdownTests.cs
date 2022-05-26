@@ -29,6 +29,8 @@ namespace intelometry_tests
         [Fact]
         public void SelectorIfPricehubsAreNull()
         {
+            int expected = 1;
+
             // Arrange
             using var ctx = new TestContext();
 
@@ -42,21 +44,17 @@ namespace intelometry_tests
             var cut = ctx.RenderComponent<PriceHubDropdown>();
 
             // Assert
-            var initialExpectedHtml = @"<div class=""btn-group"">
-                                        <button class=""btn dropdown-toggle btn-outline-primary"" 
-                                        type=""button"" id=""defaultDropdown"" data-bs-toggle=""dropdown"" 
-                                        data-bs-auto-close=""true"" aria-expanded=""false"">
-                                        Select Price Hub</button>
-                                        <ul class=""dropdown-menu"" aria-labelledby=""defaultDropdown"">
-                                        <li><a class=""dropdown-item"" blazor:onclick=""1"">-</a></li></ul></div>";
+            var listElm = cut.FindAll("li");
 
-            cut.MarkupMatches(initialExpectedHtml);
+            Assert.Equal(expected, listElm.Count);
         }
 
         [Fact]
         public void SelectorIfPricehubsArePredefined()
         {
             // Arrange
+            var ctx = new TestContext();
+
             var priceHubs = new List<PriceHubModel>() { 
                 new PriceHubModel { Id = 1, Title = "Palo Verde Peak" },
                 new PriceHubModel { Id = 2, Title = "Mid C Peak" },
@@ -67,7 +65,6 @@ namespace intelometry_tests
             Mock.Arrange(() => serviceMock.GetPriceHubDataAsync())
                 .Returns(Task.FromResult(priceHubs));
 
-            var ctx = new TestContext();
             ctx.Services.AddSingleton(serviceMock);
 
             // Act

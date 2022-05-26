@@ -22,7 +22,7 @@ namespace intelometry_app.Services
             _queryHelperService = queryHelperService;
         }
 
-        public Task<PagedResponse<List<MarketDataModel>>> GetMarketDataAsync(
+        public async Task<PagedResponse<List<MarketDataModel>>> GetMarketDataAsync(
                         PaginationFilter paginationFilter,
                         DateRangeFilter dateFilter,
                         string? priceHubFilter)
@@ -30,7 +30,7 @@ namespace intelometry_app.Services
             _connection.ConnectionString =
                 _configuration.GetConnectionString("MarketDataConnection");
 
-            var query = _queryHelperService.DefaultQuery(paginationFilter, dateFilter, priceHubFilter);
+            var query = _queryHelperService.DefaultMarketDataQuery(paginationFilter, dateFilter, priceHubFilter);
             var totalRecordsQuery = _queryHelperService.TotalRecordsQuery(dateFilter, priceHubFilter);
 
             var message = "OK";
@@ -45,7 +45,7 @@ namespace intelometry_app.Services
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     marketData.Add(new MarketDataModel
                     {
@@ -67,12 +67,12 @@ namespace intelometry_app.Services
                     columns.Add(reader.GetName(i));
                 }
 
-                reader.Close();
+                reader.Close();            
 
                 command = new(totalRecordsQuery, _connection);
                 reader = command.ExecuteReader();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     totalRecords = reader.GetInt32(0);
                 }
@@ -86,7 +86,8 @@ namespace intelometry_app.Services
                 message = "Requested data is not found!";
             }
 
-            return Task.FromResult(new PagedResponse<List<MarketDataModel>>(marketData, totalRecords, message, columns));
+            return await Task.FromResult(
+                new PagedResponse<List<MarketDataModel>>(marketData, totalRecords, message, columns));
         }
     }
 }

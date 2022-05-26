@@ -1,11 +1,9 @@
-﻿@using intelometry_app.Interfaces
-@using intelometry_app.Models
-@inject IPriceHubService PriceHubService
+﻿@inherits PriceHubDropdownBase
 
 <div class="btn-group">
     <button class="btn dropdown-toggle @(CurrentPriceHub != null ? "btn-primary" : "btn-outline-primary")" type="button"
             id="defaultDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
-        @(CurrentPriceHub ?? "Select Price Hub")
+        @(CurrentPriceHub ?? defaultValue)
     </button>
     <ul class="dropdown-menu" aria-labelledby="defaultDropdown">
         <li><a class="dropdown-item" @onclick=@(e => SelectedPriceHubInternal(null))>-</a></li>
@@ -18,25 +16,3 @@
         }
     </ul>
 </div>
-
-@code {
-    [Parameter]
-    public List<PriceHubModel>? PriceHubs { get; set; }
-
-    [Parameter]
-    public string? CurrentPriceHub { get; set; }
-
-    [Parameter]
-    public EventCallback<string> OnSelectPriceHub { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        PriceHubs = await PriceHubService.GetPriceHubDataAsync();
-    }
-
-    private async Task SelectedPriceHubInternal(string? selectedPriceHub)
-    {
-        CurrentPriceHub = selectedPriceHub;
-        await OnSelectPriceHub.InvokeAsync(selectedPriceHub);
-    }
-}

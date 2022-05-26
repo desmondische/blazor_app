@@ -8,21 +8,24 @@ namespace intelometry_app.Services
     {
         private readonly IConfiguration _configuration;
         private readonly SqlConnection _connection;
+        private readonly QueryHelperService _queryHelperService;
 
         public PriceHubService(
             IConfiguration configuration,
-            SqlConnection connection)
+            SqlConnection connection,
+            QueryHelperService queryHelperService)
         {
             _configuration = configuration;
             _connection = connection;
+            _queryHelperService = queryHelperService;
         }
 
-        public Task<List<PriceHubModel>> GetPriceHubDataAsync()
+        public async Task<List<PriceHubModel>> GetPriceHubDataAsync()
         {
             _connection.ConnectionString =
                 _configuration.GetConnectionString("MarketDataConnection");
 
-            var query = "SELECT * FROM PriceHubs";
+            var query = _queryHelperService.DefaultPriceHubsQuery();
 
             List<PriceHubModel> priceHubs = new();
 
@@ -33,7 +36,7 @@ namespace intelometry_app.Services
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                while (await reader.ReadAsync())
                 {
                     priceHubs.Add(new PriceHubModel
                     {
@@ -46,7 +49,7 @@ namespace intelometry_app.Services
                 _connection.Close();
             }
 
-            return Task.FromResult(priceHubs);
+            return await Task.FromResult(priceHubs);
         }
     }
 }

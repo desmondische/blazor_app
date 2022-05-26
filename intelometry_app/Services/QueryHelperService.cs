@@ -4,11 +4,18 @@ namespace intelometry_app.Services
 {
     public class QueryHelperService
     {
-        public string DefaultQuery(PaginationFilter paginationFilter, DateRangeFilter dateFilter, string? priceHubFilter)
+        public string DefaultMarketDataQuery(PaginationFilter paginationFilter, DateRangeFilter dateFilter, string? priceHubFilter)
         {
             string query = "SELECT * FROM IceElectric2021 ";
 
             query = ApplyFilters(query, dateFilter, priceHubFilter) + PaginationFilterQuery(paginationFilter);
+
+            return query;
+        }
+
+        public string DefaultPriceHubsQuery()
+        {
+            string query = "SELECT * FROM PriceHubs";
 
             return query;
         }

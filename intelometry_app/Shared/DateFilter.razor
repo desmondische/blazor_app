@@ -1,11 +1,13 @@
-﻿<div class="d-flex">
+﻿@inherits DateFilterBase
+
+<div class="d-flex">
     <div class="btn-group me-2">
         <button class="btn dropdown-toggle @(CurrentDateFilter != null ? "btn-primary" : "btn-outline-primary")" type="button"
                 id="defaultDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
             @(CurrentDateFilter ?? "Filter Dates")
         </button>
         <ul class="dropdown-menu" aria-labelledby="defaultDropdown">
-            <li><a class="dropdown-item" label=" " @onclick=@(e => SelectDateFilter(null))>-</a></li>
+            <li><a class="dropdown-item" @onclick=@(e => SelectDateFilter(null))>-</a></li>
             @foreach (var option in DateOptions)
             {
                 <li><a class="dropdown-item" @onclick=@(e => SelectDateFilter(option))>@option</a></li>
@@ -26,39 +28,3 @@
         </div>
     }
 </div>
-
-@code {
-    private List<string> DateOptions = new List<string> { "Trade Date", "Delivery Date" };
-
-    [Parameter]
-    public bool CurrentState { get; set; }
-
-    [Parameter]
-    public string? CurrentDateFilter { get; set; }
-
-    [Parameter]
-    public DateOnly StartDate { get; set; }
-
-    [Parameter]
-    public DateOnly EndDate { get; set; }
-
-    [Parameter]
-    public EventCallback<(DateOnly, DateOnly, string, bool)> OnSelectDateRange { get; set; }
-
-    private void SelectDateFilter(string? selectedDateFilter)
-    {
-        CurrentDateFilter = selectedDateFilter;
-        SetCurrentStateToFalse();
-    }
-
-    private async Task ApplyDateFilter(ChangeEventArgs e)
-    {
-        if (e.Value is bool && CurrentDateFilter != null)
-        {
-            CurrentState = (bool)e.Value;
-            await OnSelectDateRange.InvokeAsync((StartDate, EndDate, CurrentDateFilter, CurrentState));
-        }
-    }
-
-    private void SetCurrentStateToFalse() => CurrentState = false;
-}
