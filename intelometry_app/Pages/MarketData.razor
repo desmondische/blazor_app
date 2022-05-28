@@ -9,7 +9,7 @@
 }
 else
 {
-    <div class="d-flex flex-xl-row flex-md-column-reverse align-items-center">
+    <div class="d-flex flex-xl-row flex-md-column-reverse align-items-center pb-2 border-bottom">
         <div class="me-2">
             <PriceHubDropdown CurrentPriceHub="@priceHub" OnSelectPriceHub="UpdatePriceHub" />
         </div>
@@ -26,7 +26,8 @@ else
         </div>
     </div>
 
-    <div class="table-container border rounded-3">
+    <div class="table-container mt-3 border rounded-3">
+
         @if (response.Data.Count > 0)
         {
             <MarketDataTable MarketData="response.Data" Columns="response.Columns"></MarketDataTable>
@@ -44,7 +45,7 @@ else
         {
             <div class="py-4 text-center">
                 <p><em>@response.Message</em></p>
-                <button type="button" class="btn btn-outline-primary oi oi-reload" @onclick="Reset"></button>
+                <button type="button" class="btn btn-outline-secondary oi oi-reload" @onclick="Reset"></button>
             </div>
         }
     </div>

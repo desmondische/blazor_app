@@ -16,7 +16,8 @@
                 }
             </ul>
         </nav>
-        <select class="form-select bg-dark text-white border border-primary w-25 ms-2" value="@CurrentPageSize" @onchange="SelectPageSize">
+        <select class="form-select bg-dark text-white border border-gray-custom w-25 ms-2"
+                value="@CurrentPageSize" @onchange="SelectPageSize">
             @for (int i = 10; i <= 30; i += 5)
             {
                 <option value="@i">@i</option>
