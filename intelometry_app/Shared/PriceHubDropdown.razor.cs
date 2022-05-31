@@ -26,7 +26,9 @@ namespace intelometry_app.Shared
 
         protected async Task SelectedPriceHubInternal(string? selectedPriceHub)
         {
+
             CurrentPriceHub = selectedPriceHub;
+            
             await OnSelectPriceHub.InvokeAsync(selectedPriceHub);
         }
     }

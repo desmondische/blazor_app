@@ -79,7 +79,7 @@ namespace intelometry_tests
             {
                 new MarketDataModel { 
                     Id = 1, 
-                    PriceHub = "Indiana Hub RT Peak", 
+                    PriceHub = "Mid C Peak", 
                     TradeDate = new DateTime(2021, 1, 7), 
                     DeliveryStartDate = new DateTime(2021, 1, 8),
                     DeliveryEndDate = new DateTime(2021, 1, 8), 

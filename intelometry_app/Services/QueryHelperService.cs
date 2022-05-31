@@ -58,7 +58,7 @@ namespace intelometry_app.Services
             return query;
         }
 
-        private static string PriceHubFilterQuery(string priceHubFilter)
+        private static string PriceHubFilterQuery(string? priceHubFilter)
         {
             string query = $"[Price hub]=\'{priceHubFilter}\' ";
             return query;

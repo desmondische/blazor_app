@@ -1,5 +1,6 @@
 ﻿using intelometry_app.Models;
 using Microsoft.AspNetCore.Components;
+using System.Linq;
 
 namespace intelometry_app.Shared
 {

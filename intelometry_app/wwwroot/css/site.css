@@ -81,6 +81,7 @@ a, .btn-link {
 }
 
     .table-container .paginator {
+        background: #f5f5f5;
         position: sticky;
         bottom: -1px;
     }
@@ -110,21 +111,18 @@ thead {
 }
 
 .page-item.disabled .page-link {
-    border-color: #6e6e6e;
+    border-color: #cfcfcf;
 }
 
 .page-link {
-    color: #fff;
     border-color: #6c8bb7;
 }
 
     .page-link:focus {
-        color: #fff;
         z-index: 0;
     }
 
     .page-link:hover {
-        color: #fff;
         border-color: #7ca6e2;
     }
 
