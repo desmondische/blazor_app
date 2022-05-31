@@ -4,9 +4,15 @@ namespace intelometry_app.Services
 {
     public class QueryHelperService
     {
-        public string DefaultMarketDataQuery(PaginationFilter paginationFilter, DateRangeFilter dateFilter, string? priceHubFilter)
+        public string DefaultMarketDataQuery(PaginationFilter paginationFilter, DateRangeFilter dateFilter, int priceHubFilter)
         {
-            string query = "SELECT * FROM IceElectric2021 ";
+            string query = "select IceElectric2021_Modified.Id, PriceHubs.Title as [Price hub], " +
+                           "[Trade date],[Delivery start date],[Delivery end date], " +
+                           "[High price $/MWh], [Low price $/MWh], [Wtd avg price $/MWh], " +
+                           "[Change], [Daily volume MWh] " +
+                           "from IceElectric2021_Modified " +
+                           "inner join PriceHubs " +
+                           "on IceElectric2021_Modified.PriceHubId = PriceHubs.Id ";
 
             query = ApplyFilters(query, dateFilter, priceHubFilter) + PaginationFilterQuery(paginationFilter);
 
@@ -20,28 +26,28 @@ namespace intelometry_app.Services
             return query;
         }
 
-        public string TotalRecordsQuery(DateRangeFilter dateFilter, string? priceHubFilter)
+        public string TotalRecordsQuery(DateRangeFilter dateFilter, int priceHubFilter)
         {
-            string query = "SELECT COUNT(*) FROM IceElectric2021 ";
+            string query = "SELECT COUNT(*) FROM IceElectric2021_Modified ";
 
             query = ApplyFilters(query, dateFilter, priceHubFilter);
 
             return query;
         }
 
-        private static string ApplyFilters(string query, DateRangeFilter dateFilter, string? priceHubFilter)
+        private static string ApplyFilters(string query, DateRangeFilter dateFilter, int priceHubFilter)
         {
-            if (priceHubFilter != null && !dateFilter.IsApplied)
+            if (priceHubFilter != 0 && !dateFilter.IsApplied)
             {
                 query += "WHERE " + PriceHubFilterQuery(priceHubFilter);
             }
 
-            if (priceHubFilter == null && dateFilter.IsApplied)
+            if (priceHubFilter == 0 && dateFilter.IsApplied)
             {
                 query += "WHERE " + DateFilterQuery(dateFilter);
             }
 
-            if (priceHubFilter != null && dateFilter.IsApplied)
+            if (priceHubFilter != 0 && dateFilter.IsApplied)
             {
                 query += "WHERE " + PriceHubFilterQuery(priceHubFilter) + "AND " + DateFilterQuery(dateFilter);
             }
@@ -58,9 +64,9 @@ namespace intelometry_app.Services
             return query;
         }
 
-        private static string PriceHubFilterQuery(string? priceHubFilter)
+        private static string PriceHubFilterQuery(int priceHubFilter)
         {
-            string query = $"[Price hub]=\'{priceHubFilter}\' ";
+            string query = $"[PriceHubId]=\'{priceHubFilter}\' ";
             return query;
         }
 

@@ -14,20 +14,21 @@ namespace intelometry_app.Shared
         public List<PriceHubModel>? PriceHubs { get; set; }
 
         [Parameter]
-        public string? CurrentPriceHub { get; set; }
+        public int CurrentPriceHub { get; set; }
 
         [Parameter]
-        public EventCallback<string> OnSelectPriceHub { get; set; }
+        public EventCallback<int> OnSelectPriceHub { get; set; }
 
         protected override async Task OnParametersSetAsync()
         {
             PriceHubs = await PriceHubService.GetPriceHubDataAsync();
         }
 
-        protected async Task SelectedPriceHubInternal(string? selectedPriceHub)
+        protected async Task SelectedPriceHubInternal(int selectedPriceHub)
         {
-
-            CurrentPriceHub = selectedPriceHub;
+            if (selectedPriceHub == 0) 
+                CurrentPriceHub = 0;
+            else CurrentPriceHub = selectedPriceHub;
             
             await OnSelectPriceHub.InvokeAsync(selectedPriceHub);
         }

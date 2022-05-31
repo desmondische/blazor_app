@@ -20,14 +20,14 @@ namespace intelometry_tests
             var serviceMock = Mock.Create<IMarketDataService>();
 
             Mock.Arrange(() => serviceMock.GetMarketDataAsync(
-                Arg.IsAny<PaginationFilter>(), Arg.IsAny<DateRangeFilter>(), Arg.IsAny<string>())
+                Arg.IsAny<PaginationFilter>(), Arg.IsAny<DateRangeFilter>(), Arg.IsAny<int>())
             )
                 .Returns(new TaskCompletionSource<PagedResponse<List<MarketDataModel>>>().Task);
 
             ctx.Services.AddSingleton(serviceMock);
 
             var cut = ctx.RenderComponent<MarketData>(parameters => parameters
-              .Add(p => p.PriceHub, "Mid C Peak")
+              .Add(p => p.PriceHubId, 2)
               .Add(p => p.StartDate, DateOnly.FromDateTime(DateTime.Today))
               .Add(p => p.EndDate, DateOnly.FromDateTime(DateTime.Today))
               .Add(p => p.DateFilterType, "Trade Date")
@@ -46,7 +46,7 @@ namespace intelometry_tests
             var serviceMock = Mock.Create<IMarketDataService>();
 
             Mock.Arrange(() => serviceMock.GetMarketDataAsync(
-                Arg.IsAny<PaginationFilter>(), Arg.IsAny<DateRangeFilter>(), Arg.IsAny<string>()))
+                Arg.IsAny<PaginationFilter>(), Arg.IsAny<DateRangeFilter>(), Arg.IsAny<int>()))
                 .Returns(new TaskCompletionSource<PagedResponse<List<MarketDataModel>>>().Task);
 
             ctx.Services.AddSingleton(serviceMock);
@@ -79,7 +79,7 @@ namespace intelometry_tests
             {
                 new MarketDataModel { 
                     Id = 1, 
-                    PriceHub = "Mid C Peak", 
+                    PriceHubId = 2, 
                     TradeDate = new DateTime(2021, 1, 7), 
                     DeliveryStartDate = new DateTime(2021, 1, 8),
                     DeliveryEndDate = new DateTime(2021, 1, 8), 
@@ -95,7 +95,7 @@ namespace intelometry_tests
 
             var serviceMock = Mock.Create<IMarketDataService>();
             Mock.Arrange(() => serviceMock.GetMarketDataAsync(
-                Arg.IsAny<PaginationFilter>(), Arg.IsAny<DateRangeFilter>(), Arg.IsAny<string>()))
+                Arg.IsAny<PaginationFilter>(), Arg.IsAny<DateRangeFilter>(), Arg.IsAny<int>()))
                 .Returns(Task.FromResult(response));
 
             var serviceMock2 = Mock.Create<IPriceHubService>();

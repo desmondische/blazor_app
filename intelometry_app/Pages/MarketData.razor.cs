@@ -14,7 +14,7 @@ namespace intelometry_app.Pages
         protected int page;
         protected int pageSize;
         protected int totalPages;
-        protected string? priceHub;
+        protected int priceHub;
         protected string? dateFilterType;
         protected bool isFilterApplied;
         protected DateOnly startDate;
@@ -23,7 +23,7 @@ namespace intelometry_app.Pages
 
         [Parameter]
         [SupplyParameterFromQuery(Name = "priceHub")]
-        public string? PriceHub { get; set; }
+        public int? PriceHubId { get; set; }
 
         [Parameter]
         [SupplyParameterFromQuery(Name = "page")]
@@ -58,7 +58,7 @@ namespace intelometry_app.Pages
             var paginationFilter = new PaginationFilter(page, pageSize);
 
             // Price hub filter
-            priceHub = PriceHub ?? null;
+            priceHub = PriceHubId ?? 0;
 
             // Trade/Delivery dates range filters
             isFilterApplied = IsDateApplied ?? false;
@@ -86,9 +86,11 @@ namespace intelometry_app.Pages
             UpdatePage(1);
         }
 
-        protected void UpdatePriceHub(string priceHubTitle)
+        protected void UpdatePriceHub(int priceHubTitle)
         {
-            PriceHub = priceHubTitle;
+            PriceHubId = priceHubTitle;
+            if (priceHubTitle == 0)
+                PriceHubId = null;
             UpdatePage(1);
         }
 
@@ -109,7 +111,7 @@ namespace intelometry_app.Pages
         {
             Page = null;
             PageSize = null;
-            PriceHub = null;
+            PriceHubId = null;
             StartDate = null;
             EndDate = null;
             DateFilterType = null;
@@ -117,14 +119,14 @@ namespace intelometry_app.Pages
             NavigateTo();
         }
 
-        protected void NavigateTo()
+        private void NavigateTo()
         {
             var address = NavigationManager.GetUriWithQueryParameters(
                 new Dictionary<string, object?>
                 {
                     ["page"] = Page,
                     ["pageSize"] = PageSize,
-                    ["priceHub"] = PriceHub,
+                    ["priceHub"] = PriceHubId,
                     ["dateApplied"] = IsDateApplied,
                     ["filterType"] = DateFilterType,
                     ["startDate"] = StartDate,

@@ -1,17 +1,20 @@
 ﻿@inherits PriceHubDropdownBase
 
 <div class="btn-group">
-    <button class="btn dropdown-toggle @(CurrentPriceHub != null ? "btn-dark" : "btn-outline-dark")" type="button"
+    <button class="btn dropdown-toggle @(CurrentPriceHub != 0 ? "btn-dark" : "btn-outline-dark")" type="button"
             id="defaultDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
-        @(CurrentPriceHub ?? defaultValue)
-    </button>
-    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="defaultDropdown">
-        <li><a class="dropdown-item" @onclick=@(e => SelectedPriceHubInternal(null))>&minus;</a></li>
         @if (PriceHubs != null)
         {
-            @foreach (var priceHub in PriceHubs!)
+            @(CurrentPriceHub != 0 ? PriceHubs[CurrentPriceHub - 1].Title : defaultValue)
+        }
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="defaultDropdown">
+        <li><a class="dropdown-item" @onclick=@(e => SelectedPriceHubInternal(0))>&minus;</a></li>
+        @if (PriceHubs != null)
+        {
+            @foreach (var priceHub in PriceHubs)
             {
-                <li><a class="dropdown-item" @onclick=@(e => SelectedPriceHubInternal(priceHub.Title))>@priceHub.Title</a></li>
+                <li><a class="dropdown-item" @onclick=@(e => SelectedPriceHubInternal(priceHub.Id))>@priceHub.Title</a></li>
             }
         }
     </ul>

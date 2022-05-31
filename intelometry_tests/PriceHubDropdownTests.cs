@@ -21,7 +21,7 @@ namespace intelometry_tests
             ctx.Services.AddSingleton(serviceMock);
 
             var cut = ctx.RenderComponent<PriceHubDropdown>(parameters => parameters
-              .Add(p => p.CurrentPriceHub, "Mid C Peak")
+              .Add(p => p.CurrentPriceHub, 2)
               .Add(p => p.OnSelectPriceHub, _ => { })
             );
         }
@@ -78,8 +78,8 @@ namespace intelometry_tests
         [Fact]
         public void SelectorShouldChangeCurrentPriceHub()
         {
-            string actual = "";
-            string expected = "Mid C Peak";
+            int actual = 0;
+            int expected = 2;
 
             // Arrange
             var priceHubs = new List<PriceHubModel>() {
@@ -95,14 +95,14 @@ namespace intelometry_tests
             var ctx = new TestContext();
             ctx.Services.AddSingleton(serviceMock);
             var cut = ctx.RenderComponent<PriceHubDropdown>(parameters => parameters
-              .Add(p => p.CurrentPriceHub, null)
+              .Add(p => p.CurrentPriceHub, 0)
               .Add(p => p.OnSelectPriceHub, selectedPriceHub => actual = selectedPriceHub)
             );
 
-            var anchorElm = cut.FindAll("a")[2];
+            var anchorElm = cut.FindAll("a");
 
             // Act
-            anchorElm.Click(type: expected);
+            anchorElm[expected].Click();
 
             // Assert
             Assert.Equal(expected, cut.Instance.CurrentPriceHub);

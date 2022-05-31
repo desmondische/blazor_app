@@ -25,7 +25,7 @@ namespace intelometry_app.Services
         public async Task<PagedResponse<List<MarketDataModel>>> GetMarketDataAsync(
                         PaginationFilter paginationFilter,
                         DateRangeFilter dateFilter,
-                        string? priceHubFilter)
+                        int priceHubFilter)
         {
             _connection.ConnectionString =
                 _configuration.GetConnectionString("MarketDataConnection");

@@ -7,6 +7,6 @@ namespace intelometry_app.Interfaces
     public interface IMarketDataService
     {
         Task<PagedResponse<List<MarketDataModel>>> GetMarketDataAsync(
-            PaginationFilter paginationFilter, DateRangeFilter dateFilter, string? priceHubFilter);
+            PaginationFilter paginationFilter, DateRangeFilter dateFilter, int priceHubFilter);
     }
 }

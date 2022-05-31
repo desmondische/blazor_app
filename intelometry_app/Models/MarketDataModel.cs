@@ -6,6 +6,7 @@ namespace intelometry_app.Models
     {
         [Key]
         public int Id { get; set; }
+        public int PriceHubId { get; set; }
         public string PriceHub { get; set; } = string.Empty;
         public DateTime TradeDate { get; set; }
         public DateTime DeliveryStartDate { get; set; }
